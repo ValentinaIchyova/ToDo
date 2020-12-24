@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-// import './main'
+// import './index.css';
+import './main.sass';
 import App from './App';
+import { Provider } from 'mobx-react';
+import Store from './store';
 
-ReactDOM.render(
-  <React.StrictMode>
+const Root = (
+  <Provider Store={Store}>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </Provider>
 );
 
 
+ReactDOM.render(Root, document.getElementById('root'));

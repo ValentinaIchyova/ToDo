@@ -44,5 +44,4 @@ class TaskInput extends React.Component {
 }
 
 export default TaskInput;
-
     

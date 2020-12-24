@@ -1,25 +1,28 @@
-import { makeObservable, computed, observable, action } from 'mobx';
+import { computed, observable, action, makeObservable } from 'mobx';
 
 class Store {
+    
     tasks = [
-        {id: 0, title: "Go to shop", done: false},
-        {id: 1, title: "Отнести пуховик в химчистку", done: true},
-        {id: 2, title: "Buy presents for Christmas to parents", done: false}
+        {id: 0, title: "To wash the car", done: false},
+        {id: 1, title: "Take the down jacket to the dry cleaner", done: false},
+        {id: 2, title: "Buy presents for Christmas to parents", done: true}
     ]
 
+    idForTask = 3
+
+    filter = 'All'
 
     constructor() {
         makeObservable(this, {
             tasks: observable,
+            idForTask: observable,
+            filter: observable,
             activeTasks: computed,
-            sortedTasks: computed,
+            getVisibleTask: computed,
             addTask: action,
             deleteTask: action,
             doneTask: action,
-            showAll: action,
-            showActive: action,
-            showCompleted: action,
-            // getVisiblePost: action
+            updateFilter: action
         })
     }
 
@@ -31,22 +34,33 @@ class Store {
     get activeTasks() {
         return this.tasks.filter(task => !task.done).length;
     }
-    get sortedTasks() {
-        const tasks = this.tasks;
-        return tasks
-        .slice()
-        .sort ((a,b) => a.done === b.done ? 0 : a.done ? 1 : -1);
-    }
+   
+    get getVisibleTask() {
+            
+        if (this.filter === 'All') {
+        return this.tasks;
+        }
+        else if (this.filter === 'Active') {
+            return this.tasks.filter(task => !task.done); 
+        }
+        else if (this.filter === 'Completed') {
+            return this.tasks.filter(task => task.done);
+        }
+        
+        return this.tasks
+}
+
     addTask(task) {
         let tasks = this.tasks;
     
         tasks.push({
-          id: this.tasks.length || 0,
+          id: this.idForTask,
           title: task,
           done: false
         });
     
         this.setTasks(tasks);
+        this.idForTask++;
     }
 
     doneTask(id) {
@@ -57,39 +71,16 @@ class Store {
     }
     
     deleteTask(id) {
-        this.setTasks(this.tasks.filter(item => item.id !== id));
+        // this.setTasks(this.tasks.filter(item => item.id !== id));
+        const index = this.tasks.findIndex(item => item.id === id);
+        this.tasks.splice(index, 1);
     }
 
-    showAll() {
-        console.log('пропсы сработали ол');
-        return this.tasks;
-   }
-
-    showActive() {
-        console.log('пропсы сработали актив');
-        return this.tasks.filter(task => !task.done);    
-           
-   }
-
-    showCompleted() {
-        console.log('пропсы сработали компитид');
-        return this.tasks.filter(task => task.done);      
-   }
-
-    getVisiblePost(filter) {
-        
-        if (filter === 'All') {
-           return this.filteredList = this.tasks;
-        }
-        if (filter === 'Active') {
-            return this.filteredList = this.setTasks(this.tasks.filter(task => !task.done)); 
-        }
-        if (filter === 'Completed') {
-            return this.tasks.filter(task => task.done);
-        }
-        console.log('filter')
-   }
-
+   
+    updateFilter = filter => {
+            this.filter = filter;
+    }
+   
 }
 
 
